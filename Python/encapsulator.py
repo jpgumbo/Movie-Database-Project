@@ -1,11 +1,14 @@
-# I import psycopg so Python can connect to PostgreSQL.
+# JP: I import psycopg because I need Python to connect
+# to our PostgreSQL database.
 import psycopg
 
-# I import pandas so I can work with database results as DataFrames.
+# JP: I import pandas because I want the database results
+# to be returned as pandas DataFrames.
 import pandas as pd
 
 
-# I connect Python to my PostgreSQL database.
+# JP: I connect Python to our PostgreSQL database.
+# I use the same database that I worked with in pgAdmin.
 connection = psycopg.connect(
     dbname="movie_db_test",
     user="johnpaul",
@@ -14,10 +17,11 @@ connection = psycopg.connect(
 )
 
 
-# I create a function that gets basic movie information.
+# JP: I create this function to retrieve basic movie information.
+# This gives me the movie ID, title, and Metascore.
 def get_movie_data():
 
-    # I write the SQL query I want Python to run.
+    # JP: I write the SQL query I want Python to run.
     query = """
     SELECT
         movie_id,
@@ -26,19 +30,23 @@ def get_movie_data():
     FROM movies;
     """
 
-    # I run the SQL query using my database connection.
+    # JP: I run the SQL query and store the results
+    # as a pandas DataFrame.
     data = pd.read_sql(query, connection)
 
-    # I return the results as a pandas DataFrame.
+    # JP: I return the movie data so it can be used
+    # for further analysis.
     return data
 
 
-# I create a function that gets the critic review data
-# needed for my H2 investigation.
+# JP: I create this function for my H2 investigation.
+# I combine critic review emotions, Metascore, and
+# worldwide box office at the movie level.
 def get_critic_review_data():
 
-    # I write the SQL query that combines critic reviews,
-    # movies, and sales at movie level.
+    # JP: I use the SQL query from my H2 investigation.
+    # I average the emotional characteristics because
+    # each movie has multiple critic reviews.
     query = """
     SELECT
         cr.movie_id,
@@ -64,18 +72,23 @@ def get_critic_review_data():
         s.international_box_office;
     """
 
-    # I run the SQL query and store the results as a DataFrame.
+    # JP: I run the query and turn the results
+    # into a pandas DataFrame.
     data = pd.read_sql(query, connection)
 
-    # I return the movie-level critic review data.
+    # JP: I return the movie-level critic review data
+    # so I can use it for further analysis.
     return data
 
 
-# I create a function that calculates the correlations
-# between review emotions, Metascore, and worldwide box office.
+# JP: I create this function to calculate the correlations
+# I investigated during my SQL analysis.
+# I compare Metascore and the emotional characteristics
+# with worldwide box office.
 def get_correlation_data():
 
-    # I write the SQL query that calculates the correlations.
+    # JP: I write the SQL query that calculates
+    # the four correlations I investigated.
     query = """
     SELECT
         CORR(metascore, worldwide_box_office) AS metascore_box_office,
@@ -106,8 +119,9 @@ def get_correlation_data():
     ) AS data;
     """
 
-    # I run the SQL query using my database connection.
+    # JP: I run the query and store the correlation results
+    # as a pandas DataFrame.
     data = pd.read_sql(query, connection)
 
-    # I return the correlation results as a pandas DataFrame.
+    # JP: I return the correlation results so they can be used for analysis.
     return data
